@@ -10,7 +10,7 @@ export function SearchHistory({ searchHistory, onSelectedItem }: SearchHistoryPr
           return (
             <li key={item.id}>
               <div className='flex flex-col items-start p-2 hover:text-sky-600'>
-                <h3 onClick={() => onSelectedItem(item.title)} className='text-lg font-bold'>{item.title}</h3>
+                <a href='#' onClick={() => onSelectedItem(item.title)} className='text-lg font-bold'>{item.title}</a>
               </div>
             </li>
           )

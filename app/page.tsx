@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { ResultsTable } from '@/app/components'
 import { retrieveData } from './services/retrieve-data'
 import { SearchHistory } from './components/search-history'
 
 export default function Home() {
-  const searchRef = useRef<HTMLInputElement | null>(null)
   const [search, setSearch] = useState('')
   const [firstSearch, setFirstSearch] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -22,18 +21,12 @@ export default function Home() {
     setData(response)
     setLoading(false)
 
-    console.log(search)
     setSearchHistory([
       { id: `id-${Date.now()}`, title: search, url: '#' },
       ...searchHistory.filter(item => item.title !== search),
     ])
 
-    setSearch('')
-
-    if (searchRef?.current) {
-      searchRef.current.focus()
-      searchRef.current.value = search
-    }
+    setSearch(search)
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -52,7 +45,7 @@ export default function Home() {
               type='text'
               id='search'
               name='search'
-              ref={searchRef}
+              onFocus={_ => setSearch('')}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className='my-2 block w-full rounded-lg focus:ring-0 sm:text-sm border-zinc-300 p-2'
