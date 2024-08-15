@@ -1,2 +1,3 @@
+export * from './search-item'
 export * from './results-table-props'
-export * from './response-data-item'
+export * from './search-history-props'

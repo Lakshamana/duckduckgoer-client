@@ -11,7 +11,6 @@ export async function retrieveData(searchTerm: string): Promise<any> {
   // const data = await response.json()
   // return data.results
 
-  console.log(searchTerm)
   return promsify([
     {
       id: 'id-1',
