@@ -9,7 +9,7 @@ export function SearchHistory({ searchHistory, onSelectedItem }: SearchHistoryPr
         {searchHistory.map(item => {
           return (
             <li key={item.hash}>
-              <div className='flex flex-col items-start p-2 hover:text-sky-600'>
+              <div className='flex flex-col items-start p-2 hover:text-indigo-600'>
                 <a href='#' onClick={() => onSelectedItem(item.title)} className='text-lg font-bold'>{item.title}</a>
               </div>
             </li>

@@ -1,18 +1,19 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { ResultsTable } from '@/app/components'
+import { ResultsTable, SearchHistory, Pagination } from '@/app/components'
 import { retrieveSearchHistory, retrieveSearchResults } from './services/retrieve-data'
-import { SearchHistory } from './components/search-history'
 import Image from 'next/image'
-import { SearchHistoryItem, SearchItem } from './types'
+import { SearchHistoryItem, SearchResponse } from './types'
 
 export default function Home() {
   const [search, setSearch] = useState('')
   const [firstSearch, setFirstSearch] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState([] as SearchItem[])
+  const [searchData, setSearchData] = useState(null as SearchResponse | null)
   const [searchHistory, setSearchHistory] = useState([] as SearchHistoryItem[])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [perPage, setPerPage] = useState(10)
 
   useEffect(() => {
     async function fetchData() {
@@ -25,27 +26,47 @@ export default function Home() {
     fetchData()
   }, [firstSearch])
 
-  async function searchItem(search: string) {
+  async function searchItem({
+    search,
+    page,
+    perPage,
+  }: {
+    search: string
+    page: number
+    perPage: number
+  }) {
     if (search === '') return
 
-    console.log('loading is true')
     setLoading(true)
     setFirstSearch(false)
 
-    const response = await retrieveSearchResults(search)
+    const response = await retrieveSearchResults({ q: search, page, perPage })
 
-    setData(response.data)
-
+    setSearchData(response)
     setSearchHistory(response.updatedSearchHistory)
-
-    console.log('loading is false')
     setLoading(false)
     setSearch(search)
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
-    searchItem(search)
+
+    setCurrentPage(1)
+
+    searchItem({
+      search,
+      page: currentPage,
+      perPage,
+    })
+  }
+
+  async function retrieveSearchPage(page: number) {
+    setCurrentPage(page)
+    searchItem({
+      search,
+      page,
+      perPage,
+    })
   }
 
   return (
@@ -62,24 +83,36 @@ export default function Home() {
             <form onSubmit={handleSubmit} action='post'>
               <label htmlFor='search'></label>
               <input
-                placeholder='Search duckduckgo.com...'
+                placeholder='Search duckduckgo.com... (hit enter)'
                 type='text'
                 id='search'
                 name='search'
-                onFocus={_ => setSearch('')}
+                onFocus={() => setSearch('')}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className='my-2 block w-full rounded-lg focus:ring-0 text-black outline-none border-zinc-300 p-2'
               />
-              <button className='hidden' type='submit'></button>
+              <button className='display-none' type='submit'></button>
             </form>
           </div>
           <div className='flex items-stretch'>
             <SearchHistory
               searchHistory={searchHistory}
-              onSelectedItem={searchItem}
+              onSelectedItem={item => searchItem({ search: item, page: currentPage, perPage })}
             ></SearchHistory>
-            <ResultsTable data={data} firstSearch={firstSearch} loading={loading}></ResultsTable>
+            <ResultsTable
+              data={searchData?.data ?? []}
+              firstSearch={firstSearch}
+              loading={loading}
+            />
+          </div>
+          <div className='flex justify-center'>
+            <Pagination
+              hide={!searchData?.data.length}
+              currentPage={currentPage ?? 1}
+              lastPage={searchData?.totalPages ?? 1}
+              onSelectedPage={retrieveSearchPage}
+            />
           </div>
         </div>
       </main>

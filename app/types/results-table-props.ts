@@ -1,4 +1,4 @@
-import { SearchItem } from './response-data-item'
+import { SearchItem } from './search-item'
 
 export type ResultsTableProps = {
   data: SearchItem[]
