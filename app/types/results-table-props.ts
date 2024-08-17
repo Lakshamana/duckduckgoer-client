@@ -5,4 +5,6 @@ export type ResultsTableProps = {
   firstSearch: boolean
   loading: boolean
   error?: string
+  forceHidePagination: (shouldForceState: boolean) => void
+  cleanSearch?: () => void
 }

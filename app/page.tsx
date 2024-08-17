@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { PropsWithRef, useEffect, useRef, useState } from 'react'
 import { ResultsTable, SearchHistory, Pagination } from '@/app/components'
 import { retrieveSearchHistory, retrieveSearchResults } from './services/retrieve-data'
 import Image from 'next/image'
-import { SearchHistoryItem, SearchResponse } from './types'
+import { ResultsTableProps, SearchHistoryItem, SearchResponse } from './types'
 
 export default function Home() {
   const [search, setSearch] = useState('')
@@ -13,9 +13,12 @@ export default function Home() {
   const [searchData, setSearchData] = useState(null as SearchResponse | null)
   const [searchHistory, setSearchHistory] = useState([] as SearchHistoryItem[])
   const [currentPage, setCurrentPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
+  const [perPage] = useState(10)
   const [searchResultsError, setSearchResultsError] = useState('')
   const [historyError, setHistoryError] = useState('')
+  const [forceHidePagination, setForceHidePagination] = useState(false)
+
+  const resultsTableRef = useRef<PropsWithRef<ResultsTableProps>>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -62,6 +65,10 @@ export default function Home() {
       setSearch('')
       setSearchResultsError(error.message)
     } finally {
+      if (resultsTableRef?.current?.cleanSearch) {
+        resultsTableRef.current.cleanSearch()
+      }
+
       setLoading(false)
     }
   }
@@ -123,16 +130,18 @@ export default function Home() {
             </div>
             <div className='grow-0 w-3/4'>
               <ResultsTable
+                ref={resultsTableRef}
                 data={searchData?.data ?? []}
                 firstSearch={firstSearch}
                 loading={loading}
                 error={searchResultsError}
+                forceHidePagination={state => setForceHidePagination(state)}
               />
             </div>
           </div>
           <div className='flex justify-end'>
             <Pagination
-              hide={!searchData?.data.length}
+              hide={!searchData?.data.length || forceHidePagination}
               currentPage={currentPage ?? 1}
               lastPage={searchData?.totalPages ?? 1}
               onSelectedPage={retrieveSearchPage}
