@@ -1,26 +1,19 @@
 import { ResultsTableProps } from '@/app/types'
 
-export function ResultsTable({ data, firstSearch, loading }: ResultsTableProps) {
-  if (loading) {
-    return (
-      <section className='w-full overflow-x-hidden overflow-y-auto border-2 rounded-lg'>
-        <div className='flex flex-row items-center justify-between p-4 border-zinc-300'>
-          <div className='flex flex-col items-start'>
-            <h3 className='text-md font-bold'> Loading... </h3>
-          </div>
-        </div>
-      </section>
+export function ResultsTable({ data, firstSearch, loading, error }: ResultsTableProps) {
+  let useInnerComponent =
+    loading || error ? (
+      <>{loading ? 'Loading...' : error || ''}</>
+    ) : (
+      <>{firstSearch ? 'Try searching for something...' : 'No results found for that search'}</>
     )
-  }
 
-  if (!data.length && !loading) {
+  if (loading || error || (!data.length && !loading)) {
     return (
       <section className='w-full overflow-x-hidden overflow-y-auto border-2 rounded-lg'>
-        <div className='flex flex-row items-center justify-between p-4 border-zinc-300'>
+        <div className='flex flex-row items-center justify-between p-2 border-zinc-300'>
           <div className='flex flex-col items-start'>
-            <h3 className='text-md font-bold'>
-              {firstSearch ? 'Try searching for something...' : 'No results found for that search'}
-            </h3>
+            <h3>{useInnerComponent}</h3>
           </div>
         </div>
       </section>

@@ -15,15 +15,14 @@ export async function retrieveSearchResults({
     perPage: String(perPage),
   })
 
-  let data
+  let response
   try {
-    data = await fetch(`${apiUrl}/search?${query}`, { method: 'get' }).then(res => res.json())
+    response = await fetch(`${apiUrl}/search?${query}`, { method: 'get' }).then(res => res.json())
   } catch (error) {
-    throw new Error('Error retrieving search results')
+    throw new Error('Error retrieving search term results')
   }
 
-
-  return data
+  return response
 }
 
 export async function retrieveSearchHistory(): Promise<SearchHistoryResponse> {
@@ -31,12 +30,12 @@ export async function retrieveSearchHistory(): Promise<SearchHistoryResponse> {
 
   if (!apiUrl) throw new Error('API_URL not set')
 
-  let data
+  let response
   try {
-    data = await fetch(`${apiUrl}/search-history`, { method: 'get' }).then(res => res.json())
+    response = await fetch(`${apiUrl}/search-history`, { method: 'get' }).then(res => res.json())
   } catch (error) {
     throw new Error('Error retrieving search history')
   }
 
-  return data
+  return response
 }

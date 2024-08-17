@@ -14,13 +14,23 @@ export default function Home() {
   const [searchHistory, setSearchHistory] = useState([] as SearchHistoryItem[])
   const [currentPage, setCurrentPage] = useState(1)
   const [perPage, setPerPage] = useState(10)
+  const [searchResultsError, setSearchResultsError] = useState('')
+  const [historyError, setHistoryError] = useState('')
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
-      const response = await retrieveSearchHistory()
-      setSearchHistory(response.data)
-      setLoading(false)
+
+      try {
+        const response = await retrieveSearchHistory()
+        setSearchHistory(response.data)
+        setHistoryError('')
+      } catch (error: any) {
+        setSearchHistory([])
+        setHistoryError(error.message)
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchData()
@@ -40,12 +50,20 @@ export default function Home() {
     setLoading(true)
     setFirstSearch(false)
 
-    const response = await retrieveSearchResults({ q: search, page, perPage })
-
-    setSearchData(response)
-    setSearchHistory(response.updatedSearchHistory)
-    setLoading(false)
-    setSearch(search)
+    try {
+      const response = await retrieveSearchResults({ q: search, page, perPage })
+      setSearchData(response)
+      setSearchHistory(response?.updatedSearchHistory)
+      setSearch(search)
+      setSearchResultsError('')
+    } catch (error: any) {
+      setSearchData(null)
+      setSearchHistory([])
+      setSearch('')
+      setSearchResultsError(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
@@ -95,18 +113,24 @@ export default function Home() {
               <button className='display-none' type='submit'></button>
             </form>
           </div>
-          <div className='flex items-stretch'>
-            <SearchHistory
-              searchHistory={searchHistory}
-              onSelectedItem={item => searchItem({ search: item, page: currentPage, perPage })}
-            ></SearchHistory>
-            <ResultsTable
-              data={searchData?.data ?? []}
-              firstSearch={firstSearch}
-              loading={loading}
-            />
+          <div className='flex justify-stretch'>
+            <div className='w-1/4'>
+              <SearchHistory
+                searchHistory={searchHistory}
+                onSelectedItem={item => searchItem({ search: item, page: currentPage, perPage })}
+                error={historyError}
+              ></SearchHistory>
+            </div>
+            <div className='grow-0 w-3/4'>
+              <ResultsTable
+                data={searchData?.data ?? []}
+                firstSearch={firstSearch}
+                loading={loading}
+                error={searchResultsError}
+              />
+            </div>
           </div>
-          <div className='flex justify-center'>
+          <div className='flex justify-end'>
             <Pagination
               hide={!searchData?.data.length}
               currentPage={currentPage ?? 1}

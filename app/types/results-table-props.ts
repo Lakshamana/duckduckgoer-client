@@ -4,4 +4,5 @@ export type ResultsTableProps = {
   data: SearchItem[]
   firstSearch: boolean
   loading: boolean
+  error?: string
 }
