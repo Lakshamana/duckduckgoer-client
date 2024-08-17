@@ -13,7 +13,7 @@ export function ResultsTable({ data, firstSearch, loading }: ResultsTableProps) 
     )
   }
 
-  if (!data.length) {
+  if (!data.length && !loading) {
     return (
       <section className='w-full overflow-x-hidden overflow-y-auto border-2 rounded-lg'>
         <div className='flex flex-row items-center justify-between p-4 border-zinc-300'>
@@ -29,10 +29,10 @@ export function ResultsTable({ data, firstSearch, loading }: ResultsTableProps) 
 
   return (
     <section className='ml-auto overflow-x-hidden overflow-y-auto border-white border-2 rounded-lg'>
-      {data.map(item => {
+      {data.map((item, index) => {
         return (
           <div
-            key={item.id}
+            key={index}
             className='flex flex-row items-center justify-between p-4 border-zinc-300'
           >
             <div className='flex flex-col items-start'>

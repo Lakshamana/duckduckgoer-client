@@ -1,6 +1,6 @@
-import { SearchItem } from './search-item'
+import { SearchHistoryItem } from './search-history-item'
 
 export type SearchHistoryProps = {
-  searchHistory: SearchItem[]
+  searchHistory: SearchHistoryItem[]
   onSelectedItem: (item: string) => void
 }

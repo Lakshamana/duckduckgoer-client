@@ -1,31 +1,36 @@
-const promsify = (data: any) => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(data)
-    }, 1000)
-  })
+import { SearchHistoryResponse, SearchResponse } from '@/app/types'
+
+export async function retrieveSearchResults(q: string): Promise<SearchResponse> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+
+  if (!apiUrl) throw new Error('API_URL not set')
+
+  const query = new URLSearchParams({ q })
+
+  let data
+  try {
+    const response = await fetch(`${apiUrl}/search?${query}`)
+    data = await response.json()
+  } catch (error) {
+    throw new Error('Error retrieving search results')
+  }
+
+
+  return data
 }
 
-export async function retrieveData(searchTerm: string): Promise<any> {
-  // const response = await fetch(`https://api.example.com/search?query=${searchTerm}`)
-  // const data = await response.json()
-  // return data.results
+export async function retrieveSearchHistory(): Promise<SearchHistoryResponse> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL
 
-  return promsify([
-    {
-      id: 'id-1',
-      title: 'DuckDuckGo — Privacy, simplified.',
-      url: 'https://duckduckgo.com/',
-    },
-    {
-      id: 'id-2',
-      title: 'DuckDuckGo Privacy Browser - Apps on Google Play',
-      url: 'https://play.google.com/store/apps/details?id=com.duckduckgo.mobile.android&hl=en_US&gl=US',
-    },
-    {
-      id: 'id-3',
-      title: 'DuckDuckGo - Wikipedia',
-      url: 'https://en.wikipedia.org/wiki/DuckDuckGo',
-    },
-  ])
+  if (!apiUrl) throw new Error('API_URL not set')
+
+  let data
+  try {
+    const response = await fetch(`${apiUrl}/search-history`)
+    data = await response.json()
+  } catch (error) {
+    throw new Error('Error retrieving search history')
+  }
+
+  return data
 }

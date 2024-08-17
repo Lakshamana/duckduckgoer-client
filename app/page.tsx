@@ -1,34 +1,45 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ResultsTable } from '@/app/components'
-import { retrieveData } from './services/retrieve-data'
+import { retrieveSearchHistory, retrieveSearchResults } from './services/retrieve-data'
 import { SearchHistory } from './components/search-history'
 import Image from 'next/image'
+import { SearchHistoryItem, SearchItem } from './types'
 
 export default function Home() {
   const [search, setSearch] = useState('')
   const [firstSearch, setFirstSearch] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [data, setData] = useState([])
-  const [searchHistory, setSearchHistory] = useState([] as any[])
+  const [data, setData] = useState([] as SearchItem[])
+  const [searchHistory, setSearchHistory] = useState([] as SearchHistoryItem[])
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
+      const response = await retrieveSearchHistory()
+      setSearchHistory(response.data)
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [firstSearch])
 
   async function searchItem(search: string) {
     if (search === '') return
 
+    console.log('loading is true')
     setLoading(true)
     setFirstSearch(false)
 
-    const response = await retrieveData(search)
+    const response = await retrieveSearchResults(search)
 
-    setData(response)
+    setData(response.data)
+
+    setSearchHistory(response.updatedSearchHistory)
+
+    console.log('loading is false')
     setLoading(false)
-
-    setSearchHistory([
-      { id: `id-${Date.now()}`, title: search, url: '#' },
-      ...searchHistory.filter(item => item.title !== search),
-    ])
-
     setSearch(search)
   }
 
@@ -42,9 +53,7 @@ export default function Home() {
       <nav className='flex lg:h-dvh md:h-1/6 sm:h-24 lg:my-16 m-4 md:m-8'>
         <span className='inline-flex mx-auto items-center'>
           <Image width={32} height={32} alt='' src='/duck.svg' className='mr-2' />
-          <span className='lg:text-3xl text-base'>
-            DuckDuckGoer
-          </span>
+          <span className='lg:text-3xl text-base'>DuckDuckGoer</span>
         </span>
       </nav>
       <main className='flex flex-col items-center justify-between lg:px-24 lg:pb-24 md:px-12 px-4'>
