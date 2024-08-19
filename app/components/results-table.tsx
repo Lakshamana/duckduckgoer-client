@@ -26,7 +26,7 @@ const Component = (
       return <>Try searching for something...</>
     }
 
-    return <>Loading search results...</>
+    return <>Loading search results (it may take a while, please wait)...</>
   }
 
   if ((loading || error || !data?.length) && !search) {
@@ -96,7 +96,7 @@ const Component = (
           name='results_search'
           id='results_search'
           type='text'
-          onFocus={() => setSearch('')}
+          autoComplete='off'
           onChange={handleSearchChange}
           value={search}
         />

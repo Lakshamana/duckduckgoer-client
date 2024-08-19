@@ -4,7 +4,7 @@ import React, { PropsWithRef, useEffect, useRef, useState } from 'react'
 import { ResultsTable, SearchHistory, Pagination } from '@/app/components'
 import { retrieveSearchHistory, retrieveSearchResults } from './services/retrieve-data'
 import Image from 'next/image'
-import { ResultsTableProps, SearchHistoryItem, SearchResponse } from './types'
+import { PerformSearchProps, ResultsTableProps, SearchHistoryItem, SearchResponse } from './types'
 
 export default function Home() {
   const [search, setSearch] = useState('')
@@ -43,14 +43,11 @@ export default function Home() {
     search,
     page,
     perPage,
-  }: {
-    search: string
-    page: number
-    perPage: number
-  }) {
+  }: PerformSearchProps) {
     if (search === '') return
 
     setLoading(true)
+    setForceHidePagination(true)
     setFirstSearch(false)
 
     try {
@@ -59,6 +56,7 @@ export default function Home() {
       setSearchHistory(response?.updatedSearchHistory)
       setSearch(search)
       setSearchResultsError('')
+      setForceHidePagination(false)
     } catch (error: any) {
       setSearchData(null)
       setSearchHistory([])
@@ -85,10 +83,10 @@ export default function Home() {
     })
   }
 
-  async function retrieveSearchPage(page: number) {
+  async function retrieveSearchPage(page: number, term?: string) {
     setCurrentPage(page)
     await searchItem({
-      search,
+      search: term ?? search,
       page,
       perPage,
     })
@@ -105,7 +103,7 @@ export default function Home() {
       <main className='flex flex-col items-center justify-between lg:px-24 lg:pb-24 md:px-12 px-4'>
         <div className='w-full flex flex-col max-w-5xl items-stretch justify-center font-mono text-sm lg:flex'>
           <div className='w-full mb-2'>
-            <form onSubmit={handleSubmit} action='post'>
+            <form onSubmit={handleSubmit}>
               <label htmlFor='search'></label>
               <input
                 placeholder='Search duckduckgo.com... (hit enter)'
@@ -115,6 +113,7 @@ export default function Home() {
                 onFocus={() => setSearch('')}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                autoComplete='off'
                 className='my-2 block w-full rounded-lg focus:ring-0 text-black outline-none border-zinc-300 p-2'
               />
               <button className='display-none' type='submit'></button>
@@ -124,7 +123,7 @@ export default function Home() {
             <div className='w-1/4'>
               <SearchHistory
                 searchHistory={searchHistory}
-                onSelectedItem={item => searchItem({ search: item, page: currentPage, perPage })}
+                onSelectedItem={item => retrieveSearchPage(1, item)}
                 error={historyError}
               ></SearchHistory>
             </div>
@@ -139,7 +138,7 @@ export default function Home() {
               />
               <div className='flex justify-end'>
                 <Pagination
-                  hide={!searchData?.data.length || forceHidePagination}
+                  hide={!searchData?.data?.length || forceHidePagination}
                   currentPage={currentPage ?? 1}
                   lastPage={searchData?.totalPages ?? 1}
                   onSelectedPage={retrieveSearchPage}

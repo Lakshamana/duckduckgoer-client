@@ -7,12 +7,12 @@ export function Pagination({ currentPage, hide, lastPage, onSelectedPage }: Pagi
     .fill(null)
     .reduce((acc, _, index) => [...acc, index + 1], [])
 
-  function handleSelectedPage(e: any, page: number) {
+  async function handleSelectedPage(e: any, page: number) {
     e.preventDefault()
 
     if (page < 1 || page > lastPage) return
 
-    onSelectedPage(page)
+    await onSelectedPage(page)
   }
 
   const firstPage = 1
