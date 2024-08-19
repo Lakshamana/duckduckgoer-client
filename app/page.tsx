@@ -8,6 +8,7 @@ import { PerformSearchProps, ResultsTableProps, SearchHistoryItem, SearchRespons
 
 export default function Home() {
   const [search, setSearch] = useState('')
+  const [searchBackup, setSearchBackup] = useState('')
   const [firstSearch, setFirstSearch] = useState(true)
   const [loading, setLoading] = useState(false)
   const [searchData, setSearchData] = useState(null as SearchResponse | null)
@@ -44,17 +45,20 @@ export default function Home() {
     page,
     perPage,
   }: PerformSearchProps) {
-    if (search === '') return
+    if (!firstSearch && searchBackup === '') return
 
+    if (search) setSearchBackup(search)
+
+    console.log({ search, searchBackup })
     setLoading(true)
     setForceHidePagination(true)
     setFirstSearch(false)
 
     try {
-      const response = await retrieveSearchResults({ q: search, page, perPage })
+      const response = await retrieveSearchResults({ q: search || searchBackup, page, perPage })
       setSearchData(response)
       setSearchHistory(response?.updatedSearchHistory)
-      setSearch(search)
+      setSearch(search || searchBackup)
       setSearchResultsError('')
       setForceHidePagination(false)
     } catch (error: any) {
