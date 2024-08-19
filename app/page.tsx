@@ -78,7 +78,7 @@ export default function Home() {
 
     setCurrentPage(1)
 
-    searchItem({
+    await searchItem({
       search,
       page: currentPage,
       perPage,
@@ -87,7 +87,7 @@ export default function Home() {
 
   async function retrieveSearchPage(page: number) {
     setCurrentPage(page)
-    searchItem({
+    await searchItem({
       search,
       page,
       perPage,
@@ -137,15 +137,15 @@ export default function Home() {
                 error={searchResultsError}
                 forceHidePagination={state => setForceHidePagination(state)}
               />
+              <div className='flex justify-end'>
+                <Pagination
+                  hide={!searchData?.data.length || forceHidePagination}
+                  currentPage={currentPage ?? 1}
+                  lastPage={searchData?.totalPages ?? 1}
+                  onSelectedPage={retrieveSearchPage}
+                />
+              </div>
             </div>
-          </div>
-          <div className='flex justify-end'>
-            <Pagination
-              hide={!searchData?.data.length || forceHidePagination}
-              currentPage={currentPage ?? 1}
-              lastPage={searchData?.totalPages ?? 1}
-              onSelectedPage={retrieveSearchPage}
-            />
           </div>
         </div>
       </main>

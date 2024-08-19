@@ -5,34 +5,36 @@ function editNodeHtml(query: string, callback: (nodes: HTMLElement[]) => void): 
   callback(Array.from(document.querySelectorAll(query)))
 }
 
-const Component = ({
-  data,
-  firstSearch,
-  loading,
-  error,
-  forceHidePagination,
-}: ResultsTableProps, ref: any) => {
+const Component = (
+  { data, firstSearch, loading, error, forceHidePagination }: ResultsTableProps,
+  ref: any,
+) => {
   const [search, setSearch] = useState('')
 
   useImperativeHandle(ref, () => ({
-    cleanSearch () {
+    cleanSearch() {
       setSearch('')
-    }
+    },
   }))
 
-  let useInnerComponent =
-    loading || error ? (
-      <>{loading ? 'Loading...' : error || ''}</>
-    ) : (
-      <>{firstSearch ? 'Try searching for something...' : 'No results found for that search'}</>
-    )
+  const innerComponent = () => {
+    if (error) {
+      return <>Error loading search results</>
+    }
 
-  if ((loading || error || (!data.length && !loading)) && !search) {
+    if (firstSearch && !loading) {
+      return <>Try searching for something...</>
+    }
+
+    return <>Loading search results...</>
+  }
+
+  if ((loading || error || !data?.length) && !search) {
     return (
       <section className='w-full overflow-x-hidden overflow-y-auto border-2 rounded-lg'>
         <div className='flex flex-row items-center justify-between p-2 border-zinc-300'>
           <div className='flex flex-col items-start'>
-            <h3>{useInnerComponent}</h3>
+            <h3>{innerComponent()}</h3>
           </div>
         </div>
       </section>
