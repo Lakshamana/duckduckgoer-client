@@ -18,7 +18,7 @@ Client-side project for DuckDuckGoer, a client for DuckDuckGoer server.
 Open a terminal and head to the project root. Then run the following commands:
 
 ```bash
-$ cp .env.example .env  # and fill the environment variables
+$ cp .env.example .env  # and check your environment variables
 $ npm install
 
 $ npm run dev
@@ -36,7 +36,7 @@ Edit your env variables in the `.env` file. The following variables are availabl
 - NEXT_PUBLIC_API_URL: URL for the DuckDuckGoer server-side project, run the server and point this variable to the server URL.
 Use `/api` as the base endpoint.
 
-Example: `NEXT_PUBLIC_API_URL=http://localhost:3001/api`
+Example: `NEXT_PUBLIC_API_URL=http://localhost:3333/api`
 
 Obs: `NEXT_PUBLIC_` is a Next.js convention to make the variable available on the client-side. Do not remove it!
 
