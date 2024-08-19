@@ -49,7 +49,6 @@ export default function Home() {
 
     if (search) setSearchBackup(search)
 
-    console.log({ search, searchBackup })
     setLoading(true)
     setForceHidePagination(true)
     setFirstSearch(false)
@@ -82,7 +81,7 @@ export default function Home() {
 
     await searchItem({
       search,
-      page: currentPage,
+      page: 1,
       perPage,
     })
   }
