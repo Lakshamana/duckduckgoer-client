@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  trailingSlash: false,
+  async rewrites() {
+    return [
+      {
+        source: '/(.*)',
+        destination: '/'
+      },
+    ]
+  },
+}
 
-export default nextConfig;
+export default nextConfig
