@@ -14,7 +14,7 @@ export default function Home() {
   const [searchData, setSearchData] = useState(null as SearchResponse | null)
   const [searchHistory, setSearchHistory] = useState([] as SearchHistoryItem[])
   const [currentPage, setCurrentPage] = useState(1)
-  const [perPage] = useState(10)
+  const [perPage] = useState(5)
   const [searchResultsError, setSearchResultsError] = useState('')
   const [historyError, setHistoryError] = useState('')
   const [forceHidePagination, setForceHidePagination] = useState(false)

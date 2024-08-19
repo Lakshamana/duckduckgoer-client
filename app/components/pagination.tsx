@@ -1,4 +1,5 @@
 import { PaginationProps } from '@/app/types'
+import { dedupe } from '@/app/utils'
 
 export function Pagination({ currentPage, hide, lastPage, onSelectedPage }: PaginationProps) {
   if (hide || !lastPage) return <></>
@@ -40,11 +41,12 @@ export function Pagination({ currentPage, hide, lastPage, onSelectedPage }: Pagi
             </button>
           </li>
         )}
-        {pagesIterator.map(
-          (index: number) =>
-            (alwaysShownPages.includes(index) ||
-              (index - firstPage === 1 && currentPage - firstPage === 1) ||
-              (lastPage - index === 1 && lastPage - currentPage === 1)) && (
+        {pagesIterator.reduce(
+          (acc: any[], index: number) => [
+            ...[...dedupe(acc.slice(0, currentPage)), ...dedupe(acc.slice(currentPage, lastPage - 1))],
+            alwaysShownPages.includes(index) ||
+            (index - firstPage === 1 && currentPage - firstPage === 1) ||
+            (lastPage - index === 1 && lastPage - currentPage === 1) ? (
               <li key={index} className='px-2' onClick={e => handleSelectedPage(e, index)}>
                 <button
                   className={`w-9 h-9 rounded-md border hover:text-indigo-500 ${index === currentPage ? 'bg-white text-black' : 'text-white'}`}
@@ -52,7 +54,14 @@ export function Pagination({ currentPage, hide, lastPage, onSelectedPage }: Pagi
                   {index}
                 </button>
               </li>
+            ) : (acc.slice(0, currentPage).includes('..') && index + 1 < currentPage) ||
+              (acc.slice(currentPage, lastPage).includes('..') && index + 1 > currentPage) ? (
+              ''
+            ) : (
+              '..'
             ),
+          ],
+          [],
         )}
         {currentPage < lastPage && (
           <li className='px-2' onClick={e => handleSelectedPage(e, currentPage + 1)}>
